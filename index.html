@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Immortality Merchant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .item-card { cursor: pointer; border: 2px solid transparent; transition: all 0.3s; }
+        .item-card:hover { border-color: #007bff; transform: scale(1.05); }
+        .item-card.overpriced { border-color: #dc3545; }
+        .item-icon { font-size: 3rem; transition: all 0.3s; }
+        .timer { font-size: 2rem; font-weight: bold; color: #dc3545; }
+        .cash { font-size: 1.5rem; font-weight: bold; color: #28a745; }
+    </style>
+</head>
+<body>
+
+<!-- Intro Screen -->
+<div id="intro" class="screen active">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card bg-dark text-light">
+                    <div class="card-body text-center p-5">
+                        <h1 class="mb-4">🧪 The Immortality Merchant</h1>
+                        <p class="lead">Your goal is simple, yet daunting: Purchase the Potion of Immortality.</p>
+                        <p>Experts estimate its true worth to be over $10,000,000. You have $1,000 to your name.</p>
+                        <p class="mb-4">Good luck, merchant.</p>
+                        <button class="btn btn-primary btn-lg" onclick="startGame()">Begin Your Journey</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shop Screen -->
+<div id="shop" class="screen">
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="cash">💰 Cash: $<span id="cash">1000</span></div>
+                    <div class="timer">⏱️ <span id="timer">60.0</span>s</div>
+                    <div>📅 Day: <span id="day">1</span> | 🏪 Tier: <span id="tier">1</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-9">
+                <div class="row" id="items-container">
+                    <!-- Items will be generated here -->
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-warning btn-lg" onclick="advanceShop(1)">▶ Next Shop (-5s)</button>
+                    <button class="btn btn-danger btn-lg" onclick="advanceShop(2)">⏩ Skip Shop (-10s)</button>
+                    <button class="btn btn-secondary btn-lg" onclick="endDay()">🏁 End Day</button>
+                    <div class="mt-3">
+                        <small class="text-light">
+                            💡 <strong>Look for:</strong><br>
+                            🌟 Bright colors<br> 
+                            📏 Large size<br>
+                            ✨ Clean/pure items
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Day End Screen -->
+<div id="dayend" class="screen">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Day <span id="end-day">1</span> - Market Report</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr><th>Item</th><th>Paid</th><th>Base Value</th><th>Actual Value</th><th>Profit</th></tr>
+                                </thead>
+                                <tbody id="trade-summary">
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total Daily Profit: $<span id="total-profit">0</span></strong>
+                            <strong>New Balance: $<span id="new-balance">1000</span></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>🔧 Workshop Upgrades</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>⏱️ Reinforced Hourglass (Level <span id="time-level">0</span>)</strong>
+                            <p class="small">More time per day</p>
+                            <button class="btn btn-sm btn-success" onclick="buyUpgrade('time')" id="time-btn">
+                                Upgrade: $<span id="time-cost">100</span>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <strong>🗺️ Efficient Routing (Level <span id="route-level">0</span>)</strong>
+                            <p class="small">Faster travel between shops</p>
+                            <button class="btn btn-sm btn-success" onclick="buyUpgrade('route')" id="route-btn">
+                                Upgrade: $<span id="route-cost">150</span>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <strong>💎 Jeweler's Loupe (Level <span id="loupe-level">0</span>)</strong>
+                            <p class="small">Highlights overpriced items</p>
+                            <button class="btn btn-sm btn-success" onclick="buyUpgrade('loupe')" id="loupe-btn">
+                                Upgrade: $<span id="loupe-cost">1000</span>
+                            </button>
+                        </div>
+                        <hr>
+                        <button class="btn btn-primary btn-lg w-100" onclick="startNextDay()">
+                            Start Next Day (-$50)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Victory Screen -->
+<div id="victory" class="screen">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card bg-success text-light">
+                    <div class="card-body text-center p-5">
+                        <h1 class="mb-4">🏆 VICTORY! 🧪</h1>
+                        <p class="lead">You've done it! With the Potion of Immortality in hand, your legacy as the greatest merchant of all time is secure.</p>
+                        <p class="mb-4">You have won the game!</p>
+                        <button class="btn btn-light btn-lg" onclick="resetGame()">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Game State
+const game = {
+    cash: 1000,
+    day: 1,
+    tier: 1,
+    timeRemaining: 60,
+    dailyInventory: [],
+    skipCount: 0,
+    upgrades: { time: 0, route: 0, loupe: 0 },
+    timer: null
+};
+
+// Item Templates - organized by tier availability
+const items = [
+    // Low tier items (always available)
+    { name: 'Sapphire', icon: 'bi-circle-fill', basePrice: 100, color: '#0d6efd', minTier: 1 },
+    { name: 'Gold Coin', icon: 'bi-coin', basePrice: 200, color: '#ffc107', minTier: 1 },
+    
+    // Mid tier items
+    { name: 'Magic Potion', icon: 'bi-heart-pulse', basePrice: 300, color: '#6f42c1', minTier: 3 },
+    { name: 'Crystal', icon: 'bi-diamond', basePrice: 400, color: '#20c997', minTier: 4 },
+    
+    // High tier items
+    { name: 'Ruby', icon: 'bi-gem', basePrice: 500, color: '#dc3545', minTier: 6 },
+    { name: 'Treasure Box', icon: 'bi-box-seam', basePrice: 650, color: '#fd7e14', minTier: 8 }
+];
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+function startGame() {
+    showScreen('shop');
+    generateShop();
+    startTimer();
+}
+
+function generateItem(template) {
+    // Each attribute varies ±20% of base value
+    const colorQuality = Math.random(); // 0 = dull, 1 = vibrant
+    const sizeQuality = Math.random();  // 0 = small, 1 = large  
+    const purityQuality = Math.random(); // 0 = blemished, 1 = pure
+    
+    // Base value is always fixed from template
+    const baseValue = template.basePrice;
+    
+    // Each modifier can change value by ±20%
+    const colorMod = 0.8 + (colorQuality * 0.4); // 0.8 to 1.2
+    const sizeMod = 0.8 + (sizeQuality * 0.4);   // 0.8 to 1.2
+    const purityMod = 0.8 + (purityQuality * 0.4); // 0.8 to 1.2
+    
+    // No tier multiplier - tier only affects availability!
+    const marketValue = Math.round(baseValue * colorMod * sizeMod * purityMod);
+    const shopPrice = Math.round(marketValue * (0.90 + (Math.random() - 0.5) * 0.3)); // Easier: 90% avg instead of 95%
+    
+    return {
+        template,
+        colorQuality,
+        sizeQuality, 
+        purityQuality,
+        baseValue: baseValue, // Fixed base value
+        marketValue,
+        shopPrice: Math.max(1, shopPrice),
+        isOverpriced: shopPrice > marketValue * 1.1
+    };
+}
+
+function generateShop() {
+    const container = document.getElementById('items-container');
+    container.innerHTML = '';
+    
+    // Check for legendary shop (4 skips in a row)
+    const isLegendary = game.skipCount >= 4 && Math.random() < 0.1 && game.cash >= 1000000;
+    
+    for (let i = 0; i < 5; i++) {
+        let item;
+        if (isLegendary && i === 0) {
+            // Potion of Immortality
+            item = {
+                template: { name: 'Potion of Immortality', icon: 'bi-magic', color: '#ff0080' },
+                baseValue: 10000000,
+                marketValue: 10000000,
+                shopPrice: 1000000,
+                isImmortalityPotion: true,
+                colorQuality: 1,
+                sizeQuality: 1,
+                purityQuality: 1
+            };
+        } else {
+            // Get available items for current tier
+            const availableItems = items.filter(template => template.minTier <= game.tier);
+            
+            // Weight items: lower tier items more common, higher tier items less common
+            const weightedItems = [];
+            availableItems.forEach(template => {
+                const weight = Math.max(1, 10 - (template.minTier - 1) * 2); // Higher tier = lower weight
+                for(let w = 0; w < weight; w++) {
+                    weightedItems.push(template);
+                }
+            });
+            
+            const template = weightedItems[Math.floor(Math.random() * weightedItems.length)];
+            item = generateItem(template);
+        }
+        
+        const col = document.createElement('div');
+        col.className = 'col';
+        
+        const overpriced = game.upgrades.loupe > 0 && item.isOverpriced ? 'overpriced' : '';
+        
+        // Calculate visual style based on quality - with safety checks
+        const brightness = Math.max(0.5, Math.min(1.0, 0.5 + (item.colorQuality * 0.5)));
+        const scale = Math.max(0.5, Math.min(1.5, 0.5 + (item.sizeQuality * 1.0))); 
+        const opacity = Math.max(0.6, Math.min(1.0, 0.6 + (item.purityQuality * 0.4)));
+        const saturation = Math.max(0, Math.min(100, item.colorQuality * 100));
+        
+        // Calculate actual font size based on quality (1.5rem to 4.5rem)
+        const fontSize = 1.5 + (item.sizeQuality * 3); // 1.5rem to 4.5rem
+        
+        col.innerHTML = `
+            <div class="card item-card ${overpriced}" onclick="buyItem(${i})">
+                <div class="card-body text-center">
+                    <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                        <i class="${item.template.icon}" style="
+                            color: ${item.template.color};
+                            filter: saturate(${saturation}%) brightness(${brightness});
+                            font-size: ${fontSize}rem;
+                            opacity: ${opacity};
+                            transition: all 0.3s;
+                        "></i>
+                    </div>
+                    <h6 class="card-title mt-2">${item.template.name}</h6>
+                    <p class="card-text text-success">$${item.shopPrice}</p>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(col);
+        item.element = col;
+        game.currentShop = game.currentShop || [];
+        game.currentShop[i] = item;
+    }
+    
+    document.getElementById('tier').textContent = game.tier;
+}
+
+function buyItem(index) {
+    const item = game.currentShop[index];
+    if (game.cash >= item.shopPrice) {
+        game.cash -= item.shopPrice;
+        game.dailyInventory.push(item);
+        
+        if (item.isImmortalityPotion) {
+            showScreen('victory');
+            return;
+        }
+        
+        item.element.style.opacity = '0.5';
+        item.element.onclick = null;
+        updateUI();
+    }
+}
+
+function advanceShop(type) {
+    const cost = type === 1 ? Math.max(3, 5 - game.upgrades.route) : Math.max(6, 10 - game.upgrades.route * 2);
+    
+    if (game.timeRemaining <= cost) {
+        endDay();
+        return;
+    }
+    
+    game.timeRemaining -= cost;
+    game.tier += type;
+    
+    if (type === 2) {
+        game.skipCount++;
+    } else {
+        game.skipCount = 0;
+    }
+    
+    game.currentShop = [];
+    generateShop();
+    updateUI();
+}
+
+function startTimer() {
+    const maxTime = 60 + game.upgrades.time * 10;
+    game.timeRemaining = maxTime;
+    
+    game.timer = setInterval(() => {
+        game.timeRemaining -= 0.1;
+        if (game.timeRemaining <= 0) {
+            endDay();
+        }
+        updateUI();
+    }, 100);
+}
+
+function endDay() {
+    clearInterval(game.timer);
+    
+    // Calculate profits
+    let totalProfit = 0;
+    const summary = document.getElementById('trade-summary');
+    summary.innerHTML = '';
+    
+    game.dailyInventory.forEach(item => {
+        const profit = item.marketValue - item.shopPrice;
+        totalProfit += profit;
+        
+        const row = summary.insertRow();
+        row.innerHTML = `
+            <td>${item.template.name}</td>
+            <td>$${item.shopPrice}</td>
+            <td>$${item.baseValue}</td>
+            <td>$${item.marketValue}</td>
+            <td class="${profit >= 0 ? 'text-success' : 'text-danger'}">$${profit}</td>
+        `;
+    });
+    
+    game.cash += game.dailyInventory.reduce((sum, item) => sum + item.marketValue, 0);
+    
+    document.getElementById('end-day').textContent = game.day;
+    document.getElementById('total-profit').textContent = totalProfit;
+    document.getElementById('new-balance').textContent = game.cash;
+    
+    updateUpgradeButtons();
+    showScreen('dayend');
+}
+
+function buyUpgrade(type) {
+    const costs = { time: [100, 500], route: [150, 750], loupe: [1000] };
+    const cost = costs[type][game.upgrades[type]];
+    
+    if (game.cash >= cost && game.upgrades[type] < costs[type].length) {
+        game.cash -= cost;
+        game.upgrades[type]++;
+        updateUpgradeButtons();
+    }
+}
+
+function updateUpgradeButtons() {
+    const costs = { time: [100, 500], route: [150, 750], loupe: [1000] };
+    
+    ['time', 'route', 'loupe'].forEach(type => {
+        const level = game.upgrades[type];
+        const maxLevel = costs[type].length;
+        
+        document.getElementById(`${type}-level`).textContent = level;
+        
+        if (level < maxLevel) {
+            const cost = costs[type][level];
+            document.getElementById(`${type}-cost`).textContent = cost;
+            document.getElementById(`${type}-btn`).disabled = game.cash < cost;
+        } else {
+            document.getElementById(`${type}-btn`).textContent = 'MAX';
+            document.getElementById(`${type}-btn`).disabled = true;
+        }
+    });
+}
+
+function startNextDay() {
+    if (game.cash < 50) return;
+    
+    game.cash -= 50;
+    game.day++;
+    game.tier = 1;
+    game.dailyInventory = [];
+    game.skipCount = 0;
+    game.currentShop = [];
+    
+    showScreen('shop');
+    generateShop();
+    startTimer();
+    updateUI();
+}
+
+function updateUI() {
+    document.getElementById('cash').textContent = game.cash;
+    document.getElementById('timer').textContent = game.timeRemaining.toFixed(1);
+    document.getElementById('day').textContent = game.day;
+    document.getElementById('new-balance').textContent = game.cash;
+}
+
+function resetGame() {
+    Object.assign(game, {
+        cash: 1000,
+        day: 1,
+        tier: 1,
+        timeRemaining: 60,
+        dailyInventory: [],
+        skipCount: 0,
+        upgrades: { time: 0, route: 0, loupe: 0 },
+        currentShop: []
+    });
+    clearInterval(game.timer);
+    showScreen('intro');
+}
+
+// Initialize UI
+updateUI();
+</script>
+
+</body>
+</html>
