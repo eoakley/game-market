@@ -11,11 +11,14 @@ const GameState = {
         timeRemaining: 60,
         dailyInventory: [],
         skipCount: 0,
-        upgrades: { time: 0, route: 0, loupe: 0, lossRevert: 0 },
+        upgrades: { time: 0, route: 0, loupe: 0, lossRevert: 0, instaBuy: 0, tipButton: 0 },
         buildings: { bank: 0, megaBuilding: 0 },
         timer: null,
         debugMode: false,
-        currentShop: []
+        currentShop: [],
+        // Item knowledge tracking
+        itemKnowledge: {}, // Tracks how many times each item has been bought
+        newKnowledgeGained: [] // Temporary array for notifications
     },
 
     // Getters for game state
@@ -30,6 +33,7 @@ const GameState = {
     getTimer: () => GameState.state.timer,
     getDebugMode: () => GameState.state.debugMode,
     getCurrentShop: () => GameState.state.currentShop,
+    getItemKnowledge: () => GameState.state.itemKnowledge || {},
 
     // Setters for game state
     setCash: (cash) => GameState.state.cash = cash,
@@ -58,6 +62,16 @@ const GameState = {
     getBuildingCount: (type) => GameState.state.buildings[type] || 0,
     incrementBuilding: (type) => GameState.state.buildings[type]++,
 
+    // Item knowledge methods
+    getItemKnowledgeCount: (itemName) => {
+        const knowledge = GameState.state.itemKnowledge[itemName];
+        return knowledge ? knowledge.count : 0;
+    },
+    
+    hasItemKnowledge: (itemName) => {
+        return GameState.getItemKnowledgeCount(itemName) >= 10;
+    },
+
     // Reset game state
     reset: () => {
         GameState.state = {
@@ -67,11 +81,13 @@ const GameState = {
             timeRemaining: 60,
             dailyInventory: [],
             skipCount: 0,
-            upgrades: { time: 0, route: 0, loupe: 0, lossRevert: 0 },
+            upgrades: { time: 0, route: 0, loupe: 0, lossRevert: 0, instaBuy: 0, tipButton: 0 },
             buildings: { bank: 0, megaBuilding: 0 },
             timer: null,
             debugMode: false,
-            currentShop: []
+            currentShop: [],
+            itemKnowledge: {},
+            newKnowledgeGained: []
         };
     },
 

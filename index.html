@@ -53,6 +53,14 @@
                     <button class="btn btn-warning btn-lg" onclick="ShopManager.advanceShop(1)">▶ Next Shop (-5s)</button>
                     <button class="btn btn-danger btn-lg" onclick="ShopManager.advanceShop(2)">⏩ Skip Shop (-10s)</button>
                     <button class="btn btn-secondary btn-lg" onclick="DayManager.endDay()">🏁 End Day</button>
+                    
+                    <!-- Shop Assistance Button -->
+                    <div class="mt-3" id="shop-assistance">
+                        <button class="btn btn-success btn-sm" onclick="ShopManager.instaBuyShop()" id="insta-buy-btn" style="display: none;">
+                            ⚡ Buy Entire Shop
+                        </button>
+                    </div>
+                    
                     <div class="mt-3">
                         <small class="text-light">
                             💡 <strong>Look for:</strong><br>
@@ -127,6 +135,24 @@
                             <p class="small">Converts biggest loss to profit!</p>
                             <button class="btn btn-sm btn-danger building-btn" onclick="UpgradeManager.buyUpgrade('lossRevert')" id="lossRevert-btn">
                                 Build: $<span id="lossRevert-cost">2000</span>
+                            </button>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- NEW: Shop Assistant Upgrades -->
+                        <div class="mb-3">
+                            <strong>⚡ Insta-Buy Assistant (Level <span id="instaBuy-level">0</span>)</strong>
+                            <p class="small">Buy entire shop with 2-5% discount per level</p>
+                            <button class="btn btn-sm btn-warning building-btn" onclick="UpgradeManager.buyUpgrade('instaBuy')" id="instaBuy-btn">
+                                Build: $<span id="instaBuy-cost">5000</span>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <strong>💡 Deal Finder (Level <span id="tipButton-level">0</span>)</strong>
+                            <p class="small">Automatically highlights the best deal</p>
+                            <button class="btn btn-sm btn-info building-btn" onclick="UpgradeManager.buyUpgrade('tipButton')" id="tipButton-btn">
+                                Build: $<span id="tipButton-cost">2000</span>
                             </button>
                         </div>
                         

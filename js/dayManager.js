@@ -26,24 +26,91 @@ const DayManager = {
         const summary = document.getElementById('trade-summary');
         summary.innerHTML = '';
         
+        // Update item knowledge counters
+        DayManager._updateItemKnowledge(inventory);
+        
         // Apply Loss Revert Magic if available
         DayManager._applyLossRevert(inventory);
         
-        // Create animated row reveals
+        // Create animated row reveals and calculate total profit correctly
         inventory.forEach((item, index) => {
-            DayManager._revealRow(item, index, totalProfit, summary);
+            const profit = item.marketValue - item.shopPrice;
+            totalProfit += profit; // Accumulate profit correctly
+            DayManager._revealRow(item, index, summary, profit);
         });
         
         // Add market values to cash
         const marketValueSum = inventory.reduce((sum, item) => sum + item.marketValue, 0);
         GameState.addCash(marketValueSum);
         
-        // Update UI elements
+        // Update UI elements with correct total profit
         document.getElementById('end-day').textContent = GameState.getDay();
-        document.getElementById('total-profit').textContent = '...'; // Will be updated by animation
         document.getElementById('new-balance').textContent = GameState.getCash();
         
+        // Set total profit after all calculations are done
+        setTimeout(() => {
+            document.getElementById('total-profit').textContent = totalProfit;
+            document.getElementById('total-profit').classList.add('bounce');
+            setTimeout(() => document.getElementById('total-profit').classList.remove('bounce'), 800);
+            
+            // Add previous day income row
+            DayManager._addIncomeRow(summary);
+            
+            // Show item knowledge notifications
+            DayManager._showKnowledgeNotifications();
+        }, inventory.length * 80 + 400);
+        
         UpgradeManager.updateTownUI();
+    },
+
+    /**
+     * Update item knowledge tracking
+     * @param {Array} inventory - Daily inventory
+     * @private
+     */
+    _updateItemKnowledge(inventory) {
+        if (!GameState.state.itemKnowledge) {
+            GameState.state.itemKnowledge = {};
+        }
+        if (!GameState.state.newKnowledgeGained) {
+            GameState.state.newKnowledgeGained = [];
+        }
+        
+        inventory.forEach(item => {
+            const itemName = item.template.name;
+            if (!GameState.state.itemKnowledge[itemName]) {
+                GameState.state.itemKnowledge[itemName] = {
+                    count: 0,
+                    baseValue: item.baseValue,
+                    emoji: item.template.emoji
+                };
+            }
+            
+            GameState.state.itemKnowledge[itemName].count++;
+            
+            // Check if reached 10+ milestone
+            if (GameState.state.itemKnowledge[itemName].count === 10) {
+                GameState.state.newKnowledgeGained.push(itemName);
+            }
+        });
+    },
+
+    /**
+     * Show notifications for new item knowledge gained
+     * @private
+     */
+    _showKnowledgeNotifications() {
+        if (GameState.state.newKnowledgeGained && GameState.state.newKnowledgeGained.length > 0) {
+            GameState.state.newKnowledgeGained.forEach(itemName => {
+                const knowledge = GameState.state.itemKnowledge[itemName];
+                UIManager.showNotification(
+                    `${knowledge.emoji} ${itemName} Knowledge Gained! Base value now shown in shops.`, 
+                    'info'
+                );
+            });
+            // Clear the notifications
+            GameState.state.newKnowledgeGained = [];
+        }
     },
 
     /**
@@ -63,10 +130,15 @@ const DayManager = {
                     ((prev.marketValue - prev.shopPrice) < (current.marketValue - current.shopPrice)) ? prev : current
                 );
                 
-                // Convert loss to profit
+                // Convert loss to profit properly
                 biggestLoss.lossReverted = true;
                 biggestLoss.originalShopPrice = biggestLoss.shopPrice;
-                biggestLoss.shopPrice = Math.round(biggestLoss.marketValue * 0.8); // 20% profit
+                
+                // Calculate what the original loss was
+                const originalLoss = biggestLoss.marketValue - biggestLoss.shopPrice; // This is negative
+                
+                // Set new shop price to create the same amount as profit (flip the sign)
+                biggestLoss.shopPrice = biggestLoss.marketValue + originalLoss; // marketValue - |originalLoss|
             }
         }
     },
@@ -75,24 +147,31 @@ const DayManager = {
      * Create animated row reveal for trade report
      * @param {Object} item - Item to create row for
      * @param {number} index - Item index
-     * @param {number} totalProfit - Running total profit
      * @param {Element} summary - Summary table element
+     * @param {number} profit - Pre-calculated profit for this item
      * @private
      */
-    _revealRow(item, index, totalProfit, summary) {
+    _revealRow(item, index, summary, profit) {
         setTimeout(() => {
-            const profit = item.marketValue - item.shopPrice;
-            totalProfit += profit;
-            
             const row = summary.insertRow();
             row.className = `report-row ${profit >= 0 ? 'profit' : 'loss'}`;
             
             const profitText = item.lossReverted ? 
                 `<span class="text-warning">$${profit} (🔄 Reverted!)</span>` : 
                 `$${profit}`;
+
+            // Generate item emoji with same visual conditions as in shop
+            const visuals = ItemSystem.calculateItemVisuals(item);
+            const itemEmoji = `<span style="
+                font-size: 1.2rem;
+                filter: brightness(${visuals.brightness}) saturate(${visuals.saturation}%);
+                opacity: ${visuals.opacity};
+                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                margin-right: 8px;
+            ">${item.template.emoji}</span>`;
             
             row.innerHTML = `
-                <td><strong>${item.template.name}</strong></td>
+                <td>${itemEmoji}<strong>${item.template.name}</strong></td>
                 <td>$${item.originalShopPrice || item.shopPrice}</td>
                 <td>$${item.baseValue}</td>
                 <td>$${item.marketValue}</td>
@@ -102,15 +181,37 @@ const DayManager = {
             // Trigger animation
             setTimeout(() => row.classList.add('revealed'), 50);
             
-            // Update totals after last row
-            if (index === GameState.getDailyInventory().length - 1) {
-                setTimeout(() => {
-                    document.getElementById('total-profit').textContent = totalProfit;
-                    document.getElementById('total-profit').classList.add('bounce');
-                    setTimeout(() => document.getElementById('total-profit').classList.remove('bounce'), 800);
-                }, 200);
-            }
         }, index * 80); // 80ms delay between each row
+    },
+
+    /**
+     * Add previous day income row to summary
+     * @param {Element} summary - Summary table element
+     * @private
+     */
+    _addIncomeRow(summary) {
+        if (GameState.getDay() > 1) {
+            const passiveIncome = GameState.getPassiveIncome();
+            if (passiveIncome > 0) {
+                setTimeout(() => {
+                    const incomeRow = summary.insertRow();
+                    incomeRow.className = 'report-row income-row';
+                    incomeRow.style.borderTop = '2px solid #28a745';
+                    incomeRow.style.background = 'linear-gradient(90deg, rgba(40,167,69,0.15) 0%, rgba(40,167,69,0.08) 100%)';
+                    
+                    incomeRow.innerHTML = `
+                        <td><strong>💰 Daily Income</strong></td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td class="text-success">+$${passiveIncome}</td>
+                    `;
+                    
+                    // Trigger animation
+                    setTimeout(() => incomeRow.classList.add('revealed'), 50);
+                }, 100);
+            }
+        }
     },
 
     /**

@@ -8,7 +8,10 @@ const UpgradeManager = {
         time: [100, 500],
         route: [150, 750],
         loupe: [1000],
-        lossRevert: [2000]
+        lossRevert: [2000],
+        // New shop upgrades - Multi-level Insta-Buy
+        instaBuy: [5000, 12000, 20000, 30000],
+        tipButton: [2000]
     },
 
     // Building costs configuration
@@ -30,6 +33,9 @@ const UpgradeManager = {
             GameState.subtractCash(cost);
             GameState.incrementUpgrade(type);
             UpgradeManager.updateTownUI();
+            
+            // Show success notification
+            UIManager.showNotification(`${UpgradeManager.getUpgradeName(type)} purchased!`, 'success');
         }
     },
 
@@ -44,6 +50,9 @@ const UpgradeManager = {
             GameState.subtractCash(cost);
             GameState.incrementBuilding(type);
             UpgradeManager.updateTownUI();
+            
+            // Show success notification
+            UIManager.showNotification(`${UpgradeManager.getBuildingName(type)} built!`, 'success');
         }
     },
 
@@ -62,7 +71,7 @@ const UpgradeManager = {
      * @private
      */
     _updateUpgradeBuildings() {
-        ['time', 'route', 'loupe', 'lossRevert'].forEach(type => {
+        ['time', 'route', 'loupe', 'lossRevert', 'instaBuy', 'tipButton'].forEach(type => {
             const level = GameState.getUpgradeLevel(type);
             const maxLevel = UpgradeManager.upgradeCosts[type].length;
             
@@ -120,6 +129,23 @@ const UpgradeManager = {
     },
 
     /**
+     * Get upgrade name for display
+     * @param {string} type - Upgrade type
+     * @returns {string} Upgrade name
+     */
+    getUpgradeName(type) {
+        const names = {
+            time: 'Clocktower',
+            route: 'Stables', 
+            loupe: 'Jeweler Shop',
+            lossRevert: 'Loss Revert Magic',
+            instaBuy: 'Insta-Buy Assistant',
+            tipButton: 'Deal Finder'
+        };
+        return names[type] || type;
+    },
+
+    /**
      * Get upgrade description for future UI enhancements
      * @param {string} type - Upgrade type
      * @returns {string} Upgrade description
@@ -129,9 +155,34 @@ const UpgradeManager = {
             time: 'More time per day',
             route: 'Faster travel between shops',
             loupe: 'Highlights overpriced items',
-            lossRevert: 'Converts biggest loss to profit!'
+            lossRevert: 'Converts biggest loss to profit!',
+            instaBuy: 'Buy entire shop with discount (2-5% per level)',
+            tipButton: 'Automatically highlights the best deal in each shop'
         };
         return descriptions[type] || '';
+    },
+
+    /**
+     * Get Insta-Buy discount percentage based on level
+     * @param {number} level - Upgrade level
+     * @returns {number} Discount percentage
+     */
+    getInstaBuyDiscount(level) {
+        const discounts = [0, 2, 3, 4, 5]; // Level 0 = 0%, Level 1 = 2%, etc.
+        return discounts[level] || 0;
+    },
+
+    /**
+     * Get building name for display
+     * @param {string} type - Building type
+     * @returns {string} Building name
+     */
+    getBuildingName(type) {
+        const names = {
+            bank: 'Bank',
+            megaBuilding: 'Mega Building'
+        };
+        return names[type] || type;
     },
 
     /**

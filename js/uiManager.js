@@ -82,7 +82,7 @@ const UIManager = {
      * Attach event listeners for UI interactions
      */
     attachEventListeners() {
-        // Debug hotkey
+        // Debug hotkeys
         document.addEventListener('keydown', (event) => {
             if (event.key.toLowerCase() === 'd') {
                 const debugMode = !GameState.getDebugMode();
@@ -92,45 +92,53 @@ const UIManager = {
                 if (GameState.getCurrentShop().length > 0) {
                     ShopManager.generateShop();
                 }
+                
+                UIManager.showNotification(`Debug mode ${debugMode ? 'ON' : 'OFF'}`, 'info');
+            }
+            
+            if (event.key.toLowerCase() === 'g') {
+                GameState.addCash(1000);
+                UIManager.showCashIncrease();
+                UIManager.updateUI();
+                UIManager.showNotification('Added $1000 for testing!', 'success');
+            }
+            
+            // Debug hotkey for testing best deal highlighting
+            if (event.key.toLowerCase() === 'h') {
+                if (GameState.getCurrentShop().length > 0) {
+                    ShopManager._highlightBestDeal();
+                    UIManager.showNotification('Manually triggered best deal highlighting!', 'info');
+                } else {
+                    UIManager.showNotification('No shop available to highlight!', 'warning');
+                }
             }
         });
     },
 
     /**
-     * Show notification (for future expansion)
+     * Show notification with enhanced styling and auto-hide
      * @param {string} message - Notification message
-     * @param {string} type - Notification type (success, error, info)
+     * @param {string} type - Notification type (success, error, info, warning)
      */
     showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        document.querySelectorAll('.notification').forEach(n => n.remove());
+        
         // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.textContent = message;
         
-        // Position notification
-        notification.style.position = 'fixed';
-        notification.style.top = '20px';
-        notification.style.right = '20px';
-        notification.style.zIndex = '9999';
-        notification.style.padding = '10px 20px';
-        notification.style.borderRadius = '5px';
-        notification.style.color = 'white';
-        
-        // Set background color based on type
-        const colors = {
-            success: '#28a745',
-            error: '#dc3545',
-            info: '#17a2b8',
-            warning: '#ffc107'
-        };
-        notification.style.backgroundColor = colors[type] || colors.info;
-        
         // Add to document
         document.body.appendChild(notification);
         
-        // Remove after 3 seconds
+        // Trigger animation
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        // Auto-hide after 3 seconds
         setTimeout(() => {
-            notification.remove();
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
         }, 3000);
     },
 
@@ -171,5 +179,34 @@ const UIManager = {
             progressBar.style.width = `${percentage}%`;
             progressBar.setAttribute('aria-valuenow', percentage);
         }
+    },
+
+    /**
+     * Show welcome message for new upgrades
+     * @param {string} upgradeName - Name of the upgrade
+     */
+    showUpgradeWelcome(upgradeName) {
+        const messages = {
+            'Insta-Buy Assistant': 'You can now buy entire shops with increasing discounts per level!',
+            'Deal Finder': 'Best deals are now automatically highlighted in every shop!'
+        };
+        
+        const message = messages[upgradeName] || `${upgradeName} is now available!`;
+        UIManager.showNotification(message, 'success');
+    },
+
+    /**
+     * Highlight element temporarily
+     * @param {Element} element - Element to highlight
+     * @param {number} duration - Duration in milliseconds
+     */
+    highlightElement(element, duration = 2000) {
+        element.style.boxShadow = '0 0 20px rgba(255, 193, 7, 0.8)';
+        element.style.transform = 'scale(1.05)';
+        
+        setTimeout(() => {
+            element.style.boxShadow = '';
+            element.style.transform = '';
+        }, duration);
     }
 };

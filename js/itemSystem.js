@@ -3,19 +3,28 @@
  * Ready for expansion with new item types and progression features
  */
 const ItemSystem = {
-    // Item Templates - organized by tier availability
+    // Item Templates - organized by tier availability with beautiful emojis
     templates: [
         // Low tier items (always available)
-        { name: 'Sapphire', icon: 'bi-circle-fill', basePrice: 100, color: '#0d6efd', minTier: 1 },
-        { name: 'Gold Coin', icon: 'bi-coin', basePrice: 200, color: '#ffc107', minTier: 1 },
+        { name: 'Diamond Shard', emoji: '💎', basePrice: 100, color: '#3b82f6', minTier: 1 },
+        { name: 'Gold Coin', emoji: '🪙', basePrice: 150, color: '#f59e0b', minTier: 1 },
+        { name: 'Silver Ring', emoji: '💍', basePrice: 120, color: '#6b7280', minTier: 1 },
         
         // Mid tier items
-        { name: 'Magic Potion', icon: 'bi-heart-pulse', basePrice: 300, color: '#6f42c1', minTier: 3 },
-        { name: 'Crystal', icon: 'bi-diamond', basePrice: 400, color: '#20c997', minTier: 4 },
+        { name: 'Ruby Crown', emoji: '👑', basePrice: 300, color: '#dc2626', minTier: 3 },
+        { name: 'Ancient Vase', emoji: '🏺', basePrice: 250, color: '#92400e', minTier: 3 },
+        { name: 'Crystal Ball', emoji: '🔮', basePrice: 400, color: '#7c3aed', minTier: 4 },
+        { name: 'Magic Potion', emoji: '⚗️', basePrice: 350, color: '#059669', minTier: 4 },
         
         // High tier items
-        { name: 'Ruby', icon: 'bi-gem', basePrice: 500, color: '#dc3545', minTier: 6 },
-        { name: 'Treasure Box', icon: 'bi-box-seam', basePrice: 650, color: '#fd7e14', minTier: 8 }
+        { name: 'Mystical Beads', emoji: '📿', basePrice: 500, color: '#be185d', minTier: 6 },
+        { name: 'Protective Amulet', emoji: '🧿', basePrice: 550, color: '#1e40af', minTier: 6 },
+        { name: 'Golden Key', emoji: '🗝️', basePrice: 650, color: '#d97706', minTier: 8 },
+        { name: 'Sacred Scroll', emoji: '📜', basePrice: 700, color: '#78350f', minTier: 8 },
+        
+        // Ultra rare items (very high tier)
+        { name: 'Dragon Egg', emoji: '🥚', basePrice: 1000, color: '#991b1b', minTier: 10 },
+        { name: 'Phoenix Feather', emoji: '🪶', basePrice: 1200, color: '#c2410c', minTier: 12 }
     ],
 
     /**
@@ -86,7 +95,7 @@ const ItemSystem = {
      */
     createImmortalityPotion() {
         return {
-            template: { name: 'Potion of Immortality', icon: 'bi-magic', color: '#ff0080' },
+            template: { name: 'Potion of Immortality', emoji: '🧪', color: '#ff0080' },
             baseValue: 10000000,
             marketValue: 10000000,
             shopPrice: 1000000,
@@ -104,12 +113,12 @@ const ItemSystem = {
      */
     calculateItemVisuals(item) {
         // Calculate visual style based on quality - with safety checks
-        const brightness = Math.max(0.5, Math.min(1.0, 0.5 + (item.colorQuality * 0.5)));
-        const opacity = Math.max(0.6, Math.min(1.0, 0.6 + (item.purityQuality * 0.4)));
-        const saturation = Math.max(0, Math.min(100, item.colorQuality * 100));
+        const brightness = Math.max(0.7, Math.min(1.3, 0.7 + (item.colorQuality * 0.6))); // Brighter range for emojis
+        const opacity = Math.max(0.8, Math.min(1.0, 0.8 + (item.purityQuality * 0.2))); // Less opacity variation for emojis
+        const saturation = Math.max(80, Math.min(120, 80 + (item.colorQuality * 40))); // More saturated for emojis
         
-        // Calculate actual font size based on quality (1.5rem to 4.5rem)
-        const fontSize = 1.5 + (item.sizeQuality * 3); // 1.5rem to 4.5rem
+        // Calculate actual font size based on quality (2rem to 5rem for better emoji visibility)
+        const fontSize = 2 + (item.sizeQuality * 3); // 2rem to 5rem
         
         return {
             brightness,
