@@ -49,7 +49,15 @@ const DayManager = {
         
         // Set total profit after all calculations are done
         setTimeout(() => {
-            document.getElementById('total-profit').textContent = totalProfit;
+            const totalProfitElement = document.getElementById('total-profit');
+            const totalProfitContainer = totalProfitElement.parentElement;
+            
+            if (totalProfit >= 0) {
+                totalProfitContainer.innerHTML = `Total Daily Profit: $<span id="total-profit">${totalProfit}</span>`;
+            } else {
+                totalProfitContainer.innerHTML = `Total Daily Profit: -$<span id="total-profit">${Math.abs(totalProfit)}</span>`;
+            }
+            
             document.getElementById('total-profit').classList.add('bounce');
             setTimeout(() => document.getElementById('total-profit').classList.remove('bounce'), 800);
             
@@ -156,9 +164,10 @@ const DayManager = {
             const row = summary.insertRow();
             row.className = `report-row ${profit >= 0 ? 'profit' : 'loss'}`;
             
+            const profitFormatted = profit >= 0 ? `+$${profit}` : `-$${Math.abs(profit)}`;
             const profitText = item.lossReverted ? 
-                `<span class="text-warning">$${profit} (🔄 Reverted!)</span>` : 
-                `$${profit}`;
+                `<span class="text-warning">${profitFormatted} (🔄 Reverted!)</span>` : 
+                `${profitFormatted}`;
 
             // Generate item emoji with same visual conditions as in shop - INCLUDING DIRT
             const visuals = ItemSystem.calculateItemVisuals(item);

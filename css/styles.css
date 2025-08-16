@@ -1,7 +1,341 @@
-/* ===== GLOBAL STYLES ===== */
+/* ===== GAME-THEMED GLOBAL STYLES ===== */
 body { 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-    min-height: 100vh; 
+    background: 
+        radial-gradient(ellipse at top, rgba(13, 27, 42, 0.9) 0%, transparent 70%),
+        radial-gradient(ellipse at bottom, rgba(27, 38, 49, 0.8) 0%, transparent 70%),
+        linear-gradient(135deg, #1a237e 0%, #3949ab 25%, #5e35b1 50%, #7e57c2 75%, #9c27b0 100%);
+    min-height: 100vh;
+    font-family: 'Cinzel', serif;
+    color: #f8f9fa;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255,215,0,0.05) 0%, transparent 30%),
+        radial-gradient(circle at 80% 20%, rgba(138,43,226,0.08) 0%, transparent 40%),
+        radial-gradient(circle at 40% 80%, rgba(75,0,130,0.06) 0%, transparent 35%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ===== GAME PANELS (Replace Bootstrap Cards) ===== */
+.game-panel {
+    background: 
+        linear-gradient(145deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.98) 100%);
+    border: 3px solid transparent;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -1px 0 rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, transparent 30%, rgba(138,43,226,0.05) 100%);
+    border-radius: 12px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.game-panel-header {
+    background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(138,43,226,0.15) 100%);
+    border-bottom: 2px solid rgba(255,215,0,0.3);
+    padding: 1.8rem 2rem;
+    margin: -1rem -1.5rem 1.5rem -1.5rem;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    overflow: visible;
+}
+
+.game-panel-header::before {
+    content: '⚜️';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.game-panel-content {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== FANTASY BUTTONS ===== */
+.game-btn {
+    background: linear-gradient(145deg, #4a5568 0%, #2d3748 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    color: #f7fafc;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Cinzel', serif;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.game-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.game-btn:hover::before {
+    left: 100%;
+}
+
+.game-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 25px rgba(0,0,0,0.3),
+        0 0 20px rgba(255,215,0,0.2);
+    border-color: #ffd700;
+    color: #fff;
+}
+
+.game-btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.game-btn-primary {
+    background: linear-gradient(145deg, #3182ce 0%, #2c5282 100%);
+    border-color: #4299e1;
+}
+
+.game-btn-success {
+    background: linear-gradient(145deg, #38a169 0%, #2f855a 100%);
+    border-color: #48bb78;
+}
+
+.game-btn-warning {
+    background: linear-gradient(145deg, #d69e2e 0%, #b7791f 100%);
+    border-color: #ecc94b;
+}
+
+.game-btn-danger {
+    background: linear-gradient(145deg, #e53e3e 0%, #c53030 100%);
+    border-color: #f56565;
+}
+
+.game-btn-large {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+}
+
+.game-btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+/* ===== MYSTICAL HUD ELEMENTS ===== */
+.hud-container {
+    background: linear-gradient(145deg, rgba(26,32,46,0.95) 0%, rgba(15,23,42,0.98) 100%);
+    border: 2px solid rgba(255,215,0,0.3);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(8px);
+    box-shadow: 
+        0 4px 20px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    position: relative;
+}
+
+.hud-container::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(135deg, rgba(255,215,0,0.4), transparent 30%, rgba(138,43,226,0.3));
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+.cash { 
+    font-size: 1.8rem; 
+    font-weight: bold; 
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.3);
+    transition: all 0.3s; 
+}
+
+.timer { 
+    font-size: 1.8rem; 
+    font-weight: bold; 
+    color: #f56565;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(245,101,101,0.3);
+    transition: all 0.3s; 
+}
+
+.timer.warning { 
+    animation: pulse 1s infinite; 
+    color: #ff0000;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(255,0,0,0.6);
+}
+
+.hud-info {
+    color: #e2e8f0;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* ===== ENHANCED ITEM CARDS ===== */
+.item-card { 
+    background: linear-gradient(145deg, rgba(45,55,72,0.9) 0%, rgba(26,32,44,0.95) 100%);
+    border: 2px solid rgba(226,232,240,0.3);
+    border-radius: 12px;
+    cursor: pointer; 
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    box-shadow: 
+        0 4px 16px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.item-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,215,0,0.05) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.item-card:hover::before {
+    opacity: 1;
+}
+
+.item-card:hover { 
+    border-color: #ffd700;
+    transform: scale(1.05) rotate(1deg); 
+    box-shadow: 
+        0 12px 40px rgba(0,0,0,0.4),
+        0 0 30px rgba(255,215,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.item-card:hover .item-icon {
+    transform: scale(1.1);
+    animation: pulse 0.8s ease-in-out infinite;
+}
+
+/* ===== INVENTORY/SHOP GRID ===== */
+.shop-container {
+    background: linear-gradient(145deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.9) 100%);
+    border: 3px solid rgba(255,215,0,0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.shop-container::before {
+    content: '🏪 MYSTICAL BAZAAR 🏪';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #1a365d, #2c5282);
+    color: #ffd700;
+    padding: 5px 20px;
+    border-radius: 20px;
+    border: 2px solid #ffd700;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* ===== UPGRADE TOWN PANEL ===== */
+.town-panel {
+    background: 
+        radial-gradient(ellipse at top left, rgba(75,0,130,0.1) 0%, transparent 50%),
+        linear-gradient(145deg, rgba(26,32,46,0.95) 0%, rgba(15,23,42,0.98) 100%);
+    border: 3px solid rgba(138,43,226,0.3);
+    border-radius: 15px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.town-panel::before {
+    content: '🏰';
+    position: absolute;
+    top: -20px;
+    right: 15px;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+.upgrade-item {
+    background: linear-gradient(135deg, rgba(45,55,72,0.6) 0%, rgba(26,32,44,0.8) 100%);
+    border: 1px solid rgba(226,232,240,0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.upgrade-item:hover {
+    border-color: rgba(255,215,0,0.4);
+    box-shadow: 0 4px 15px rgba(255,215,0,0.1);
+}
+
+.upgrade-title {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    margin-bottom: 0.5rem;
+}
+
+.upgrade-description {
+    color: #cbd5e0;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    font-style: italic;
 }
 
 /* ===== SCREEN MANAGEMENT ===== */
@@ -12,13 +346,72 @@ body {
 
 .screen.active { 
     display: block; 
-    animation: fadeIn 0.5s ease; 
+    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+/* ===== INTRO SCREEN STYLING ===== */
+.intro-panel {
+    background: 
+        radial-gradient(ellipse at center, rgba(138,43,226,0.15) 0%, transparent 70%),
+        linear-gradient(145deg, rgba(26,32,46,0.95) 0%, rgba(15,23,42,0.98) 100%);
+    border: 4px solid rgba(255,215,0,0.4);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+}
+
+.intro-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        conic-gradient(from 0deg, transparent, rgba(255,215,0,0.1), transparent, rgba(138,43,226,0.1), transparent);
+    animation: rotate 20s linear infinite;
+    opacity: 0.3;
+}
+
+.intro-title {
+    color: #ffd700;
+    text-shadow: 
+        3px 3px 6px rgba(0,0,0,0.8),
+        0 0 20px rgba(255,215,0,0.4);
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+/* ===== VICTORY SCREEN ===== */
+.victory-panel {
+    background: 
+        radial-gradient(ellipse at center, rgba(34,197,94,0.2) 0%, transparent 70%),
+        linear-gradient(145deg, rgba(5,46,22,0.95) 0%, rgba(15,23,42,0.98) 100%);
+    border: 4px solid rgba(34,197,94,0.6);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    position: relative;
+}
+
+.victory-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        conic-gradient(from 0deg, transparent, rgba(34,197,94,0.1), transparent, rgba(255,215,0,0.1), transparent);
+    animation: rotate 15s linear infinite;
+    opacity: 0.4;
 }
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(20px); } 
-    to { opacity: 1; transform: translateY(0); } 
+    from { opacity: 0; transform: translateY(30px) scale(0.95); } 
+    to { opacity: 1; transform: translateY(0) scale(1); } 
 }
 
 @keyframes bounce { 
@@ -44,93 +437,113 @@ body {
     100% { transform: rotateY(360deg); } 
 }
 
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 @keyframes glow {
     0% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)); }
-    50% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.9)); }
+    50% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9)); }
     100% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)); }
 }
 
 @keyframes bestDealPulse {
     0% { 
-        border-color: #28a745;
-        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.8), 0 0 20px rgba(40, 167, 69, 0.3);
+        border-color: #22c55e;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4);
         transform: scale(1);
     }
     50% {
-        border-color: #34ce57;
-        box-shadow: 0 0 0 8px rgba(40, 167, 69, 0), 0 0 30px rgba(40, 167, 69, 0.5);
+        border-color: #4ade80;
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0), 0 0 40px rgba(34, 197, 94, 0.6);
         transform: scale(1.03);
     }
     100% { 
-        border-color: #28a745;
-        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.8), 0 0 20px rgba(40, 167, 69, 0.3);
+        border-color: #22c55e;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8), 0 0 25px rgba(34, 197, 94, 0.4);
         transform: scale(1);
     }
 }
 
-/* ===== ITEM CARDS ===== */
-.item-card { 
-    cursor: pointer; 
-    border: 2px solid transparent; 
-    transition: all 0.3s ease; 
-    transform-origin: center; 
+/* ===== ITEM-SPECIFIC STYLES ===== */
+.item-icon { 
+    font-size: 4rem; 
+    transition: all 0.4s ease;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
 }
 
-/* Default hover - no color information given to player */
-.item-card:hover { 
-    border-color: #6c757d; 
-    transform: scale(1.05) rotate(1deg); 
-    box-shadow: 0 8px 25px rgba(108,117,125,0.3); 
-}
-
-.item-card:hover span {
-    transform: scale(1.1);
-    animation: pulse 0.8s ease-in-out infinite;
-}
-
-/* Only show red border for overpriced items if player has Jeweler Shop upgrade */
 .item-card.overpriced { 
-    border-color: #dc3545; 
+    border-color: #ef4444; 
     animation: shake 0.5s ease; 
-}
-
-.item-card.overpriced:hover {
-    border-color: #dc3545;
-    box-shadow: 0 8px 25px rgba(220,53,69,0.4);
+    box-shadow: 0 0 20px rgba(239,68,68,0.3);
 }
 
 .item-card.bought { 
     animation: coinFlip 0.6s ease, bounce 0.8s ease 0.6s; 
 }
 
-/* Best deal highlighting - always visible when Deal Finder is active */
-.item-card.best-deal-highlight {
-    border: 4px solid #28a745 !important;
+.best-deal-highlight .item-card {
+    border: 4px solid #22c55e !important;
     animation: bestDealPulse 2s infinite;
     z-index: 10;
     position: relative;
 }
 
-.item-card.best-deal-highlight:after {
-    content: '💡 BEST DEAL';
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(45deg, #28a745, #34ce57);
-    color: white;
-    font-size: 0.7rem;
-    font-weight: bold;
-    padding: 3px 10px;
-    border-radius: 15px;
-    border: 2px solid #fff;
-    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.5);
-    z-index: 11;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+/* Removed best deal text label - just keep the pulsing border */
+
+.best-deal-highlight {
+    z-index: 10;
+    position: relative;
 }
 
-/* ===== NEW: DIRT/WEAR OVERLAY EFFECT ===== */
-/* Create a dirt overlay using pseudo-element with emoji mask */
+/* ===== CASH ANIMATIONS ===== */
+.cash.increase { 
+    animation: bounce 0.8s ease; 
+    color: #10b981 !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(16,185,129,0.6) !important;
+}
+
+.cash.decrease { 
+    animation: shake 0.5s ease; 
+    color: #ef4444 !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(239,68,68,0.6) !important;
+}
+
+/* ===== REPORT ROW ANIMATIONS ===== */
+.report-row { 
+    opacity: 0; 
+    transform: translateX(-50px) scale(0.9); 
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.report-row.revealed { 
+    opacity: 1; 
+    transform: translateX(0) scale(1); 
+}
+
+/* ===== ADDITIONAL GAME ELEMENTS ===== */
+.building-btn { 
+    transition: all 0.3s ease; 
+}
+
+.building-btn:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+}
+
+.building-btn:active { 
+    transform: scale(0.95); 
+}
+
+/* ===== EMOJI STYLING & DIRT OVERLAY ===== */
+.item-emoji {
+    user-select: none;
+    -webkit-user-select: none;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+/* ===== DIRT/WEAR OVERLAY EFFECT ===== */
 .item-emoji.dirty {
     position: relative;
 }
@@ -169,134 +582,68 @@ body {
 }
 
 /* Make dirt more visible on hover */
-.item-card:hover .item-display-area::after {
+.item-card:hover .item-emoji.dirty::after {
     opacity: calc(var(--dirt-opacity, 0) * 1.3);
 }
 
-/* ===== UI ELEMENTS ===== */
-.item-icon { 
-    font-size: 3rem; 
-    transition: all 0.4s ease; 
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .intro-title { font-size: 2rem; }
+    .cash, .timer { font-size: 1.4rem; }
+    .item-icon { font-size: 3rem; }
+    .game-panel-content { padding: 1rem; }
 }
 
-.timer { 
-    font-size: 2rem; 
-    font-weight: bold; 
-    color: #dc3545; 
-    transition: all 0.3s; 
-}
-
-.timer.warning { 
-    animation: pulse 1s infinite; 
-    color: #ff0000; 
-}
-
-.cash { 
-    font-size: 1.5rem; 
-    font-weight: bold; 
-    color: #28a745; 
-    transition: all 0.3s; 
-}
-
-.cash.increase { 
-    animation: bounce 0.8s ease; 
-    color: #00ff00; 
-}
-
-.cash.decrease { 
-    animation: shake 0.5s ease; 
-    color: #ff4444; 
-}
-
-/* ===== POPUPS ===== */
+/* ===== POPUPS & NOTIFICATIONS ===== */
 .profit-popup { 
     position: absolute; 
-    top: -30px; 
-    right: 10px; 
-    color: #28a745; 
+    top: -35px; 
+    right: 15px; 
+    color: #22c55e;
+    background: rgba(0,0,0,0.8);
+    padding: 5px 10px;
+    border-radius: 15px;
     font-weight: bold; 
     animation: bounce 0.6s ease; 
     z-index: 1000; 
-    pointer-events: none; 
+    pointer-events: none;
+    border: 1px solid #22c55e;
+    text-shadow: 0 0 5px #22c55e;
 }
 
 .loss-popup { 
     position: absolute; 
-    top: -30px; 
-    right: 10px; 
-    color: #dc3545; 
+    top: -35px; 
+    right: 15px; 
+    color: #ef4444;
+    background: rgba(0,0,0,0.8);
+    padding: 5px 10px;
+    border-radius: 15px;
     font-weight: bold; 
     animation: shake 0.6s ease; 
     z-index: 1000; 
-    pointer-events: none; 
+    pointer-events: none;
+    border: 1px solid #ef4444;
+    text-shadow: 0 0 5px #ef4444;
 }
 
-/* ===== BUTTONS ===== */
-.building-btn { 
-    transition: all 0.3s ease; 
-}
-
-.building-btn:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
-}
-
-.building-btn:active { 
-    transform: scale(0.95); 
-}
-
-/* ===== CARDS ===== */
-.card { 
-    transition: all 0.3s ease; 
-}
-
-.card:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15); 
-}
-
-/* ===== REPORT ROWS ===== */
-.report-row { 
-    opacity: 0; 
-    transform: translateX(-50px) scale(0.9); 
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.report-row.revealed { 
-    opacity: 1; 
-    transform: translateX(0) scale(1); 
-}
-
-.report-row.profit { 
-    background: linear-gradient(90deg, rgba(40,167,69,0.1) 0%, rgba(40,167,69,0.05) 100%);
-}
-
-.report-row.loss { 
-    background: linear-gradient(90deg, rgba(220,53,69,0.1) 0%, rgba(220,53,69,0.05) 100%);
-}
-
-/* ===== EMOJI SPECIFIC STYLES ===== */
-.item-emoji {
-    user-select: none;
-    -webkit-user-select: none;
-    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-}
-
-/* ===== NOTIFICATION STYLES ===== */
 .notification {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 12px 20px;
-    border-radius: 8px;
+    padding: 15px 25px;
+    border-radius: 12px;
     color: white;
     font-weight: bold;
     z-index: 9999;
     opacity: 0;
     transform: translateX(100%);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-left: 4px solid rgba(255,255,255,0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    border-left: 4px solid rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
 }
 
 .notification.show {
@@ -304,40 +651,71 @@ body {
     transform: translateX(0);
 }
 
-.notification-success { 
-    background: linear-gradient(135deg, #28a745, #20c997);
+/* ===== UTILITY CLASSES ===== */
+.text-shadow { text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+.glow-gold { box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+.glow-purple { box-shadow: 0 0 20px rgba(138,43,226,0.3); }
+
+/* ===== TABLE STYLING (Reports) ===== */
+.report-table {
+    background: rgba(15,23,42,0.8);
+    border-radius: 10px;
+    border: 1px solid rgba(255,215,0,0.2);
+    overflow: hidden;
 }
 
-.notification-error { 
-    background: linear-gradient(135deg, #dc3545, #e74c3c);
+.report-table th {
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(138,43,226,0.15)) !important;
+    color: #ffd700 !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    border-bottom: 2px solid rgba(255,215,0,0.3) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
 }
 
-.notification-info { 
-    background: linear-gradient(135deg, #17a2b8, #3498db);
+.report-table td {
+    border-bottom: 1px solid rgba(226,232,240,0.1) !important;
+    color: #e2e8f0 !important;
+    background: rgba(15,23,42,0.6) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
 }
 
-.notification-warning { 
-    background: linear-gradient(135deg, #ffc107, #f39c12);
-    color: #212529; 
+.report-row.profit { 
+    background: linear-gradient(90deg, rgba(34,197,94,0.25) 0%, rgba(34,197,94,0.15) 100%) !important;
 }
 
-/* ===== SHOP ASSISTANCE BUTTONS ===== */
-#shop-assistance button {
-    margin-bottom: 5px;
-    transition: all 0.3s ease;
+.report-row.loss { 
+    background: linear-gradient(90deg, rgba(239,68,68,0.25) 0%, rgba(239,68,68,0.15) 100%) !important;
 }
 
-#shop-assistance button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+/* ===== ITEM CARD TEXT COLORS ===== */
+.item-card .card-title {
+    color: #f8f9fa !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
-#insta-buy-btn {
-    background: linear-gradient(135deg, #28a745, #20c997) !important;
-    border: none !important;
+.item-card .card-text {
+    color: #10b981 !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
-#tip-btn {
-    background: linear-gradient(135deg, #17a2b8, #3498db) !important;
-    border: none !important;
+.item-card .text-info {
+    color: #60a5fa !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+/* ===== BRIGHT PROFIT/LOSS COLORS ===== */
+.text-success {
+    color: #22c55e !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(34,197,94,0.3);
+}
+
+.text-danger {
+    color: #ef4444 !important;  
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(239,68,68,0.3);
 }
