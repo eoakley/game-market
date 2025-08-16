@@ -75,14 +75,10 @@ const ShopManager = {
      * @private
      */
     _updateNavigationButtons() {
-        const routeLevel = GameState.getUpgradeLevel('route');
-        const nextCost = Math.max(3, 5 - routeLevel);
-        const skipCost = Math.max(6, 10 - routeLevel * 2);
-        
         document.querySelector('button[onclick="ShopManager.advanceShop(1)"]').innerHTML = 
-            `▶ Next Shop (-${nextCost}s)`;
+            `▶️ Next Shop (-5s)`;
         document.querySelector('button[onclick="ShopManager.advanceShop(2)"]').innerHTML = 
-            `⏩ Skip Shop (-${skipCost}s)`;
+            `⏩ Skip Shop (-10s)`;
     },
 
     /**
@@ -387,10 +383,7 @@ const ShopManager = {
      * @param {number} type - 1 for next shop, 2 for skip shop
      */
     advanceShop(type) {
-        const routeLevel = GameState.getUpgradeLevel('route');
-        const cost = type === 1 ? 
-            Math.max(3, 5 - routeLevel) : 
-            Math.max(6, 10 - routeLevel * 2);
+        const cost = type === 1 ? 5 : 10; // Next shop: 5s, Skip shop: 10s
         
         if (GameState.getTimeRemaining() <= cost) {
             DayManager.endDay();

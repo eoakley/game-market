@@ -81,17 +81,23 @@ const UpgradeManager = {
             const level = GameState.getUpgradeLevel(type);
             const maxLevel = UpgradeManager.upgradeCosts[type].length;
             
-            document.getElementById(`${type}-level`).textContent = level;
+            const levelElement = document.getElementById(`${type}-level`);
+            const costElement = document.getElementById(`${type}-cost`);
+            const buttonElement = document.getElementById(`${type}-btn`);
+            
+            // Only update if elements exist (prevents errors when on wrong screen)
+            if (levelElement) levelElement.textContent = level;
             
             if (level < maxLevel) {
                 const cost = UpgradeManager.upgradeCosts[type][level];
-                document.getElementById(`${type}-cost`).textContent = cost;
-                document.getElementById(`${type}-btn`).disabled = GameState.getCash() < cost;
+                if (costElement) costElement.textContent = cost;
+                if (buttonElement) buttonElement.disabled = GameState.getCash() < cost;
             } else {
-                const button = document.getElementById(`${type}-btn`);
-                button.textContent = 'BUILT';
-                button.disabled = true;
-                console.log(`${type} upgrade maxed out - button set to BUILT`);
+                if (buttonElement) {
+                    buttonElement.textContent = 'BUILT';
+                    buttonElement.disabled = true;
+                    console.log(`${type} upgrade maxed out - button set to BUILT`);
+                }
             }
         });
     },
@@ -161,8 +167,8 @@ const UpgradeManager = {
      */
     getUpgradeDescription(type) {
         const descriptions = {
-            time: 'More time per day',
-            route: 'Faster travel between shops',
+            time: '+10 seconds per day per level',
+            route: '+5 seconds per day per level',
             loupe: 'Highlights overpriced items',
             lossRevert: 'Converts biggest loss to profit!',
             instaBuy: 'Buy entire shop with discount (2-5% per level)',

@@ -7,9 +7,10 @@ const TimerSystem = {
      * Start the daily timer
      */
     startTimer() {
-        // Calculate max time based on clocktower upgrade
+        // Calculate max time based on upgrades
         const timeLevel = GameState.getUpgradeLevel('time');
-        const maxTime = 60 + timeLevel * 10;
+        const routeLevel = GameState.getUpgradeLevel('route');
+        const maxTime = 60 + timeLevel * 10 + routeLevel * 5; // Clocktower: +10s/level, Stables: +5s/level
         GameState.setTimeRemaining(maxTime);
         
         // Clear any existing timer
@@ -89,7 +90,8 @@ const TimerSystem = {
      */
     getMaxDailyTime() {
         const timeLevel = GameState.getUpgradeLevel('time');
-        return 60 + timeLevel * 10;
+        const routeLevel = GameState.getUpgradeLevel('route');
+        return 60 + timeLevel * 10 + routeLevel * 5; // Clocktower: +10s/level, Stables: +5s/level
     },
 
     /**

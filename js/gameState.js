@@ -98,6 +98,6 @@ const GameState = {
         return bankIncome + megaIncome;
     },
 
-    // Calculate daily cost
-    getDailyCost: () => (GameState.getDay() - 1) * 10
+    // Calculate daily cost - first 5 days free, then +$10 per day
+    getDailyCost: () => Math.max(0, (GameState.getDay() - 5) * 10)
 };
