@@ -3,6 +3,20 @@
  * Ready for expansion with new item types and progression features
  */
 const ItemSystem = {
+    /**
+     * Generate random number using Box-Muller Gaussian/normal distribution
+     * @param {number} mean - Mean value
+     * @param {number} stdDev - Standard deviation
+     * @returns {number} Random number from normal distribution
+     */
+    gaussianRandom(mean, stdDev) {
+        let u = 0, v = 0;
+        while(u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+        while(v === 0) v = Math.random();
+        const z0 = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        return z0 * stdDev + mean;
+    },
+
     // Item Templates - organized by tier availability with beautiful emojis
     templates: [
         // Low tier items (always available)
@@ -28,37 +42,45 @@ const ItemSystem = {
     ],
 
     /**
-     * Generate a random item based on template
+     * Generate a random item based on template with NEW PRICING SYSTEM
      * @param {Object} template - Item template to base generation on
      * @returns {Object} Generated item with randomized properties
      */
     generateItem(template) {
-        // Each attribute varies ±20% of base value - NOW WITH CLEANLINESS!
-        const colorQuality = Math.random(); // 0 = dull, 1 = vibrant
-        const sizeQuality = Math.random();  // 0 = small, 1 = large  
-        const purityQuality = Math.random(); // 0 = blemished, 1 = pure
-        const cleanliness = Math.random();   // 0 = very dirty/worn, 1 = pristine/clean
+        // Generate three quality parameters (0 to 1 range)
+        const colorQuality = Math.random();    // 0 = dull, 1 = vibrant (saturation)
+        const sizeQuality = Math.random();     // 0 = small, 1 = large
+        const cleanliness = Math.random();     // 0 = very dirty/worn, 1 = pristine/clean
         
         // Base value is always fixed from template
         const baseValue = template.basePrice;
         
-        // Each modifier can change value by ±20% - INCLUDING CLEANLINESS
-        const colorMod = 0.8 + (colorQuality * 0.4); // 0.8 to 1.2
-        const sizeMod = 0.8 + (sizeQuality * 0.4);   // 0.8 to 1.2
-        const purityMod = 0.8 + (purityQuality * 0.4); // 0.8 to 1.2
-        const cleanMod = 0.8 + (cleanliness * 0.4);   // 0.8 to 1.2 - dirty items worth less
+        // NEW PRICING SYSTEM:
+        // 1. Generate market price using Gaussian distribution
+        const currentTier = GameState.getTier();
+        const priceToBaseMean = 0.9 + (currentTier * 0.02); // 90% + tier * 2%
+        const priceStdDev = 0.15; // Standard deviation for variety
+        const marketPriceMultiplier = Math.max(0.3, ItemSystem.gaussianRandom(priceToBaseMean, priceStdDev));
+        const marketValue = Math.round(baseValue * marketPriceMultiplier);
         
-        // Market value now includes cleanliness factor
-        const marketValue = Math.round(baseValue * colorMod * sizeMod * purityMod * cleanMod);
-        const shopPrice = Math.round(marketValue * (0.90 + (Math.random() - 0.5) * 0.3)); // Easier: 90% avg instead of 95%
+        // 2. Calculate shop price based on three quality parameters
+        // Each parameter contributes ±20%, total ±60% from market value
+        // 0.5, 0.5, 0.5 = exactly market price (no change)
+        // 1, 1, 1 = +60% market price, 0, 0, 0 = -60% market price
+        const colorEffect = (colorQuality - 0.5) * 0.4;    // ±20%
+        const sizeEffect = (sizeQuality - 0.5) * 0.4;      // ±20%  
+        const cleanEffect = (cleanliness - 0.5) * 0.4;     // ±20%
+        
+        const totalQualityEffect = colorEffect + sizeEffect + cleanEffect; // ±60% total
+        const shopPrice = Math.round(marketValue * (1 + totalQualityEffect));
         
         return {
             template,
             colorQuality,
             sizeQuality, 
-            purityQuality,
-            cleanliness, // NEW: dirt/wear factor
-            baseValue: baseValue, // Fixed base value
+            purityQuality: (colorQuality + sizeQuality + cleanliness) / 3, // Average for visual compatibility
+            cleanliness,
+            baseValue: baseValue,
             marketValue,
             shopPrice: Math.max(1, shopPrice)
         };
@@ -119,20 +141,32 @@ const ItemSystem = {
         // Calculate visual style based on quality - with safety checks
         const brightness = Math.max(0.7, Math.min(1.3, 0.7 + (item.colorQuality * 0.6))); // Brighter range for emojis
         const opacity = Math.max(0.8, Math.min(1.0, 0.8 + (item.purityQuality * 0.2))); // Less opacity variation for emojis
-        const saturation = Math.max(80, Math.min(120, 80 + (item.colorQuality * 40))); // More saturated for emojis
+        
+        // FIXED: Saturation from 0% (completely gray) to 120% (very saturated)
+        const saturation = item.colorQuality * 120; // 0 to 120%
         
         // Calculate actual font size based on quality (2rem to 5rem for better emoji visibility)
         const fontSize = 2 + (item.sizeQuality * 3); // 2rem to 5rem
 
-        // NEW: Calculate dirt/wear overlay opacity - more dirt = higher opacity = darker overlay
-        const dirtOpacity = Math.max(0, Math.min(0.6, (1 - item.cleanliness) * 0.6)); // 0 to 0.6 opacity
+        // FIXED: Non-linear dirt calculation
+        let dirtOpacity = 0;
+        if (item.cleanliness >= 0.5) {
+            // Clean items (0.5-1.0): very low dirt opacity (0-15%)
+            dirtOpacity = (1 - item.cleanliness) * 0.3; // 0% to 15%
+        } else if (item.cleanliness >= 0.35) {
+            // Somewhat dirty (0.35-0.5): moderate dirt (15-25%)
+            dirtOpacity = 0.15 + ((0.5 - item.cleanliness) / 0.15) * 0.1; // 15% to 25%
+        } else {
+            // Very dirty (0-0.35): high dirt (25-60%)
+            dirtOpacity = 0.25 + ((0.35 - item.cleanliness) / 0.35) * 0.35; // 25% to 60%
+        }
         
         return {
             brightness,
             opacity,
             saturation,
             fontSize,
-            dirtOpacity // NEW: for the dirt overlay effect
+            dirtOpacity
         };
     },
 

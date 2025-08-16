@@ -247,7 +247,7 @@ const ShopManager = {
      */
     _generateItemHTML(item, index, overpriced, visuals) {
         const debugInfo = GameState.getDebugMode() ? 
-            `<div class="small text-warning"><strong>Debug:</strong><br>Market: $${item.marketValue}<br>Profit: $${item.marketValue - item.shopPrice}<br>Cleanliness: ${item.cleanliness.toFixed(2)}</div>` : 
+            `<div class="small text-warning"><strong>Debug:</strong><br>Market: $${item.marketValue}<br>Profit: $${item.marketValue - item.shopPrice}<br>Size: ${item.sizeQuality.toFixed(2)}<br>Saturation: ${item.colorQuality.toFixed(2)}<br>Cleanliness: ${item.cleanliness.toFixed(2)}</div>` : 
             '';
 
         // Check if player has knowledge about this item (bought 10+)
