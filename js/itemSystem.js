@@ -33,21 +33,23 @@ const ItemSystem = {
      * @returns {Object} Generated item with randomized properties
      */
     generateItem(template) {
-        // Each attribute varies ±20% of base value
+        // Each attribute varies ±20% of base value - NOW WITH CLEANLINESS!
         const colorQuality = Math.random(); // 0 = dull, 1 = vibrant
         const sizeQuality = Math.random();  // 0 = small, 1 = large  
         const purityQuality = Math.random(); // 0 = blemished, 1 = pure
+        const cleanliness = Math.random();   // 0 = very dirty/worn, 1 = pristine/clean
         
         // Base value is always fixed from template
         const baseValue = template.basePrice;
         
-        // Each modifier can change value by ±20%
+        // Each modifier can change value by ±20% - INCLUDING CLEANLINESS
         const colorMod = 0.8 + (colorQuality * 0.4); // 0.8 to 1.2
         const sizeMod = 0.8 + (sizeQuality * 0.4);   // 0.8 to 1.2
         const purityMod = 0.8 + (purityQuality * 0.4); // 0.8 to 1.2
+        const cleanMod = 0.8 + (cleanliness * 0.4);   // 0.8 to 1.2 - dirty items worth less
         
-        // No tier multiplier - tier only affects availability!
-        const marketValue = Math.round(baseValue * colorMod * sizeMod * purityMod);
+        // Market value now includes cleanliness factor
+        const marketValue = Math.round(baseValue * colorMod * sizeMod * purityMod * cleanMod);
         const shopPrice = Math.round(marketValue * (0.90 + (Math.random() - 0.5) * 0.3)); // Easier: 90% avg instead of 95%
         
         return {
@@ -55,6 +57,7 @@ const ItemSystem = {
             colorQuality,
             sizeQuality, 
             purityQuality,
+            cleanliness, // NEW: dirt/wear factor
             baseValue: baseValue, // Fixed base value
             marketValue,
             shopPrice: Math.max(1, shopPrice)
@@ -102,12 +105,13 @@ const ItemSystem = {
             isImmortalityPotion: true,
             colorQuality: 1,
             sizeQuality: 1,
-            purityQuality: 1
+            purityQuality: 1,
+            cleanliness: 1 // Immortality potion is always pristine
         };
     },
 
     /**
-     * Calculate visual properties for item display
+     * Calculate visual properties for item display - NOW WITH DIRT EFFECT
      * @param {Object} item - Item to calculate visuals for
      * @returns {Object} Visual properties object
      */
@@ -119,12 +123,16 @@ const ItemSystem = {
         
         // Calculate actual font size based on quality (2rem to 5rem for better emoji visibility)
         const fontSize = 2 + (item.sizeQuality * 3); // 2rem to 5rem
+
+        // NEW: Calculate dirt/wear overlay opacity - more dirt = higher opacity = darker overlay
+        const dirtOpacity = Math.max(0, Math.min(0.6, (1 - item.cleanliness) * 0.6)); // 0 to 0.6 opacity
         
         return {
             brightness,
             opacity,
             saturation,
-            fontSize
+            fontSize,
+            dirtOpacity // NEW: for the dirt overlay effect
         };
     },
 

@@ -144,7 +144,7 @@ const DayManager = {
     },
 
     /**
-     * Create animated row reveal for trade report
+     * Create animated row reveal for trade report - NOW WITH DIRT EFFECT
      * @param {Object} item - Item to create row for
      * @param {number} index - Item index
      * @param {Element} summary - Summary table element
@@ -160,15 +160,25 @@ const DayManager = {
                 `<span class="text-warning">$${profit} (🔄 Reverted!)</span>` : 
                 `$${profit}`;
 
-            // Generate item emoji with same visual conditions as in shop
+            // Generate item emoji with same visual conditions as in shop - INCLUDING DIRT
             const visuals = ItemSystem.calculateItemVisuals(item);
-            const itemEmoji = `<span style="
-                font-size: 1.2rem;
-                filter: brightness(${visuals.brightness}) saturate(${visuals.saturation}%);
-                opacity: ${visuals.opacity};
-                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-                margin-right: 8px;
-            ">${item.template.emoji}</span>`;
+            const itemEmoji = `
+                <div style="
+                    display: inline-block;
+                    margin-right: 8px;
+                    vertical-align: middle;
+                ">
+                    <span class="item-emoji ${visuals.dirtOpacity > 0 ? 'dirty' : ''}" 
+                        data-emoji="${item.template.emoji}"
+                        style="
+                        font-size: 1.2rem;
+                        filter: brightness(${visuals.brightness}) saturate(${visuals.saturation}%);
+                        opacity: ${visuals.opacity};
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                        --dirt-opacity: ${visuals.dirtOpacity};
+                    ">${item.template.emoji}</span>
+                </div>
+            `;
             
             row.innerHTML = `
                 <td>${itemEmoji}<strong>${item.template.name}</strong></td>

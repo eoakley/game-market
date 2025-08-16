@@ -237,17 +237,17 @@ const ShopManager = {
     },
 
     /**
-     * Generate HTML for individual item
+     * Generate HTML for individual item - NOW WITH DIRT OVERLAY
      * @param {Object} item - Item to generate HTML for
      * @param {number} index - Item index
      * @param {string} overpriced - Overpriced CSS class
-     * @param {Object} visuals - Visual properties
+     * @param {Object} visuals - Visual properties including dirt
      * @returns {string} HTML string
      * @private
      */
     _generateItemHTML(item, index, overpriced, visuals) {
         const debugInfo = GameState.getDebugMode() ? 
-            `<div class="small text-warning"><strong>Debug:</strong><br>Market: $${item.marketValue}<br>Profit: $${item.marketValue - item.shopPrice}</div>` : 
+            `<div class="small text-warning"><strong>Debug:</strong><br>Market: $${item.marketValue}<br>Profit: $${item.marketValue - item.shopPrice}<br>Cleanliness: ${item.cleanliness.toFixed(2)}</div>` : 
             '';
 
         // Check if player has knowledge about this item (bought 10+)
@@ -258,8 +258,16 @@ const ShopManager = {
         return `
             <div class="card item-card ${overpriced}" onclick="ShopManager.buyItem(${index})">
                 <div class="card-body text-center">
-                    <div style="height: 90px; display: flex; align-items: center; justify-content: center;">
-                        <span style="
+                    <div class="item-display-area" style="
+                        height: 90px; 
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center;
+                        position: relative;
+                    ">
+                        <span class="item-emoji ${visuals.dirtOpacity > 0 ? 'dirty' : ''}" 
+                            data-emoji="${item.template.emoji}" 
+                            style="
                             font-size: ${visuals.fontSize}rem;
                             filter: brightness(${visuals.brightness}) saturate(${visuals.saturation}%);
                             opacity: ${visuals.opacity};
@@ -267,6 +275,9 @@ const ShopManager = {
                             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
                             display: inline-block;
                             transform: scale(1);
+                            position: relative;
+                            z-index: 1;
+                            --dirt-opacity: ${visuals.dirtOpacity};
                         ">${item.template.emoji}</span>
                     </div>
                     <h6 class="card-title mt-2">${item.template.name}</h6>
