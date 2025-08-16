@@ -5,13 +5,13 @@
 const UpgradeManager = {
     // Upgrade costs configuration
     upgradeCosts: {
-        time: [100, 500],
-        route: [150, 750],
+        time: [100, 200, 300, 400, 500],
+        route: [150, 250, 350, 450, 550],
         loupe: [1000],
         lossRevert: [2000],
         // New shop upgrades - Multi-level Insta-Buy
         instaBuy: [5000, 12000, 20000, 30000],
-        tipButton: [2000]
+        tipButton: [3000]
     },
 
     // Building costs configuration
