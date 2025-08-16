@@ -202,5 +202,39 @@ const ItemSystem = {
      */
     getItemTemplate(name) {
         return ItemSystem.templates.find(template => template.name === name) || null;
+    },
+
+    /**
+     * Create the Immortality Potion (original victory item)
+     * @returns {Object} Immortality Potion item
+     */
+    createImmortalityPotion() {
+        return {
+            template: { name: 'Potion of Immortality', emoji: '🧪', color: '#ffd700' },
+            shopPrice: 10000000,
+            marketValue: 15000000,
+            baseValue: 10000000,
+            sizeQuality: 1,
+            colorQuality: 1,
+            cleanliness: 1,
+            isImmortalityPotion: true
+        };
+    },
+
+    /**
+     * Create the Suspicious Potion (Alchemist Hub version)
+     * @returns {Object} Suspicious Potion item
+     */
+    createSuspiciousPotion() {
+        return {
+            template: { name: 'Suspicious Potion', emoji: '🧪', color: '#8b5cf6' },
+            shopPrice: 15000,
+            marketValue: 20000,
+            baseValue: 15000,
+            sizeQuality: 0.8,
+            colorQuality: 0.7,
+            cleanliness: 0.6,
+            isSuspiciousPotion: true
+        };
     }
 };

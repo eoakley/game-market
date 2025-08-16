@@ -17,11 +17,26 @@ const ShopManager = {
         
         let shopItems = [];
         
+        // Check for Suspicious Potion ONCE per shop
+        let suspiciousPotionSlot = -1;
+        if (!isLegendary && GameState.getUpgradeLevel('alchemistHub') > 0 && GameState.getTier() >= 5) {
+            const currentTier = GameState.getTier();
+            const spawnChance = (currentTier - 4) * 0.05; // 5% per tier above 4
+            
+            if (Math.random() < spawnChance) {
+                suspiciousPotionSlot = Math.floor(Math.random() * 5); // Random slot 0-4
+                console.log(`Suspicious Potion will appear in slot ${suspiciousPotionSlot}! Tier: ${currentTier}, Chance: ${(spawnChance * 100).toFixed(1)}%`);
+            }
+        }
+        
         for (let i = 0; i < 5; i++) {
             let item;
             if (isLegendary && i === 0) {
                 // Potion of Immortality
                 item = ItemSystem.createImmortalityPotion();
+            } else if (i === suspiciousPotionSlot) {
+                // Suspicious Potion in predetermined slot
+                item = ItemSystem.createSuspiciousPotion();
             } else {
                 // Get weighted items for current tier
                 const weightedItems = ItemSystem.getWeightedItems(GameState.getTier());
@@ -320,7 +335,7 @@ const ShopManager = {
         // DO NOT re-highlight best deal! Best deal is determined once per shop and never changes
         
         // Check for victory condition
-        if (item.isImmortalityPotion) {
+        if (item.isImmortalityPotion || item.isSuspiciousPotion) {
             setTimeout(() => UIManager.showScreen('victory'), 1000);
             return;
         }

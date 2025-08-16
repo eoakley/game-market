@@ -11,7 +11,8 @@ const UpgradeManager = {
         lossRevert: [2000],
         // New shop upgrades - Multi-level Insta-Buy
         instaBuy: [5000, 12000, 20000, 30000],
-        tipButton: [3000]
+        tipButton: [3000],
+        alchemistHub: [20000]
     },
 
     // Building costs configuration
@@ -29,9 +30,14 @@ const UpgradeManager = {
         const currentLevel = GameState.getUpgradeLevel(type);
         const cost = costs[currentLevel];
         
+        console.log(`Buying ${type}: currentLevel=${currentLevel}, maxLevels=${costs.length}, cost=${cost}`);
+        
         if (GameState.getCash() >= cost && currentLevel < costs.length) {
             GameState.subtractCash(cost);
             GameState.incrementUpgrade(type);
+            
+            console.log(`${type} purchased! New level: ${GameState.getUpgradeLevel(type)}`);
+            
             UpgradeManager.updateTownUI();
             
             // Show success notification
@@ -71,7 +77,7 @@ const UpgradeManager = {
      * @private
      */
     _updateUpgradeBuildings() {
-        ['time', 'route', 'loupe', 'lossRevert', 'instaBuy', 'tipButton'].forEach(type => {
+        ['time', 'route', 'loupe', 'lossRevert', 'instaBuy', 'tipButton', 'alchemistHub'].forEach(type => {
             const level = GameState.getUpgradeLevel(type);
             const maxLevel = UpgradeManager.upgradeCosts[type].length;
             
@@ -82,8 +88,10 @@ const UpgradeManager = {
                 document.getElementById(`${type}-cost`).textContent = cost;
                 document.getElementById(`${type}-btn`).disabled = GameState.getCash() < cost;
             } else {
-                document.getElementById(`${type}-btn`).textContent = 'BUILT';
-                document.getElementById(`${type}-btn`).disabled = true;
+                const button = document.getElementById(`${type}-btn`);
+                button.textContent = 'BUILT';
+                button.disabled = true;
+                console.log(`${type} upgrade maxed out - button set to BUILT`);
             }
         });
     },
@@ -140,7 +148,8 @@ const UpgradeManager = {
             loupe: 'Jeweler Shop',
             lossRevert: 'Loss Revert Magic',
             instaBuy: 'Insta-Buy Assistant',
-            tipButton: 'Deal Finder'
+            tipButton: 'Deal Finder',
+            alchemistHub: 'Alchemist Hub'
         };
         return names[type] || type;
     },
@@ -157,7 +166,8 @@ const UpgradeManager = {
             loupe: 'Highlights overpriced items',
             lossRevert: 'Converts biggest loss to profit!',
             instaBuy: 'Buy entire shop with discount (2-5% per level)',
-            tipButton: 'Automatically highlights the best deal in each shop'
+            tipButton: 'Automatically highlights the best deal in each shop',
+            alchemistHub: 'Attracts potion sellers to your shops'
         };
         return descriptions[type] || '';
     },
